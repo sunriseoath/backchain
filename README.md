@@ -8,12 +8,12 @@ A proof of concept of various games that can use the idea of backchaining to cre
 
 ## Platformer
 
-WASD        - Move
-Q / ←       - Turn left
-E / →       - Turn right  
-↑ / ↓       - Look up/down
-SPACE       - Jump
-Mouse       - Look (when pointer locked)
+- WASD        - Move
+- Q / ←       - Turn left
+- E / →       - Turn right  
+- ↑ / ↓       - Look up/down
+- SPACE       - Jump
+- Mouse       - Look (when pointer locked)
 
 ## Typing Game
 
