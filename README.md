@@ -1,6 +1,6 @@
 # Blockchain
 
-- [Itch.io]([https://](https://sunriseoath.itch.io/backchain)
+- [Itch.io](https://sunriseoath.itch.io/backchain)
 
 **Master the end. Learn the beginning.**
 
