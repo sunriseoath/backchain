@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Backchain</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="mute-button" class="menu-button-small" data-action="toggle-mute" title="Toggle Mute (Alt+M)">🔊</div>        
+        <div id="ui-overlay" style="display: none;">
+            <div id="timer-display">0.00</div>
+            <div id="run-info">RUN<br><span class="run-number">1</span></div>
+            <div id="mode-indicator">CLASSIC</div>
+            <div id="room-indicator">
+                <div id="room-name">ROOM</div>
+                <div id="room-progress">Room 1 / 1</div>
+                <div id="par-info"></div>
+            </div>
+            <div id="crosshair"></div>
+            <div id="room-flash"></div>
+            <div id="best-run">BEST: --</div>
+            <div id="splits-display"></div>
+            <div id="controls-help">WASD - Move | Q/E or ←→ - Turn | ↑↓ - Look | SPACE - Jump</div>
+        </div>
+
+        <!-- SCREENS -->
+        <div id="title-screen" class="screen-overlay">
+            <h1>BACKCHAIN</h1>
+            <p class="screen-subtitle">Master the end. Learn the beginning.</p>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="select-game">START GAME</button>
+            </div>
+            <div class="input-hint">Press SPACE or ENTER to select</div>
+        </div>
+
+        <div id="game-select-screen" class="screen-overlay" style="display: none;">
+            <h1>SELECT GAME</h1>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="platformer">🏃 PLATFORMER</button>
+                <button class="menu-button" data-action="typing">⌨️ TYPING</button>
+                <button class="menu-button secondary" data-action="back-to-title">← BACK</button>
+            </div>
+            <div class="mode-description" id="game-description">First-person speedrun platformer. Navigate rooms, master the chain!</div>
+            <div class="input-hint">↑↓ Navigate | SPACE/ENTER Select</div>
+        </div>
+
+        <div id="platformer-mode-screen" class="screen-overlay" style="display: none;">
+            <h1>PLATFORMER</h1>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="mode-classic">⛓️ CLASSIC</button>
+                <button class="menu-button" data-action="mode-adaptive">🎯 ADAPTIVE</button>
+                <button class="menu-button" data-action="mode-speedrun">⏱️ SPEEDRUN</button>
+                <button class="menu-button secondary" data-action="back-to-games">← BACK</button>
+            </div>
+            <div class="mode-description" id="platformer-mode-description">The original experience. Each run adds a new room to the beginning.</div>
+            <div class="input-hint">↑↓ Navigate | SPACE/ENTER Select</div>
+        </div>
+
+        <div id="typing-mode-screen" class="screen-overlay" style="display: none;">
+            <h1>TYPING</h1>
+            
+            <!-- NEW: Current Book Indicator -->
+            <div id="current-book-indicator" style="color: #00ffcc; font-size: 24px; margin-bottom: 20px; font-weight: bold; border-bottom: 1px solid #00ffcc; padding-bottom: 5px;">
+                REVELATION
+            </div>
+
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="typing-classic">⛓️ CLASSIC</button>
+                <button class="menu-button" data-action="typing-adaptive">🎯 ADAPTIVE</button>
+                <button class="menu-button" data-action="typing-zen">🧘 ZEN</button>
+                <button class="menu-button secondary" data-action="select-book">📖 CHANGE BOOK</button>
+                <button class="menu-button secondary" data-action="back-to-games">← BACK</button>
+            </div>
+            <div class="mode-description" id="typing-mode-description">
+                Type verses from the selected book, building backward from the end.
+            </div>
+            <div class="input-hint">↑↓ Navigate | SPACE/ENTER Select</div>
+        </div>
+        
+        <div id="bible-select-screen" class="screen-overlay" style="display: none; overflow-y: auto;">
+            <h1>SELECT BOOK</h1>
+            <div id="bible-categories" class="menu-grid">
+                <!-- Populated by JS -->
+            </div>
+            <div class="menu-buttons" style="margin-top: 20px;">
+                <button class="menu-button secondary" data-action="back-to-typing-modes">← BACK</button>
+            </div>
+        </div>   
+
+        <div id="gameover-screen" class="screen-overlay" style="display: none;">
+            <h1 id="gameover-title">TIME'S UP</h1>
+            <p class="screen-subtitle" id="gameover-subtitle">The chain breaks.</p>
+            <div class="stats" id="gameover-stats"></div>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="retry">TRY AGAIN</button>
+                <button class="menu-button secondary" data-action="back-to-modes">CHANGE MODE</button>
+            </div>
+            <div class="input-hint">SPACE/ENTER to select</div>
+        </div>
+
+        <div id="victory-screen" class="screen-overlay" style="display: none;">
+            <h1>RUN COMPLETE!</h1>
+            <p class="screen-subtitle" id="victory-subtitle">Chain extended.</p>
+            <div class="stats" id="victory-stats"></div>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="continue">NEXT RUN</button>
+                <button class="menu-button secondary" data-action="back-to-modes">CHANGE MODE</button>
+            </div>
+            <div class="input-hint">SPACE/ENTER to select</div>
+        </div>
+
+        <div id="speedrun-complete-screen" class="screen-overlay" style="display: none;">
+            <h1>FINISHED!</h1>
+            <p class="screen-subtitle">All rooms cleared!</p>
+            <div class="stats">
+                <div style="font-size: 48px; color: #00ff88;" id="final-time">00:00.00</div>
+                <div id="pb-message" style="margin-top: 10px;"></div>
+            </div>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="retry">RUN AGAIN</button>
+                <button class="menu-button secondary" data-action="back-to-modes">CHANGE MODE</button>
+            </div>
+            <div class="input-hint">SPACE/ENTER to select</div>
+        </div>
+        
+        <div id="pause-screen" class="screen-overlay" style="display: none;">
+            <h1>PAUSED</h1>
+            <div class="menu-buttons">
+                <button class="menu-button selected" data-action="resume">RESUME</button>
+                <button class="menu-button" data-action="restart">RESTART RUN</button>
+                <button class="menu-button secondary" data-action="quit">EXIT TO MENU</button>
+            </div>
+            <div class="input-hint">Press ESC to Resume</div>
+        </div>
+        
+        <!-- TYPING GAME -->
+        <div id="typing-container" style="display: none;">
+            <div id="typing-exit-bar">
+                <span>Press ESC or click here to abandon run</span>
+                <button id="typing-exit-button">✕</button>
+            </div>
+            <div id="typing-header">
+                <div id="typing-run-info">RUN <span id="typing-run-number">1</span></div>
+                <div id="typing-timer">0.00</div>
+                <div id="typing-verse-info">Revelation 22:21 (1/1)</div>
+            </div>
+            <div id="typing-progress-container">
+                <div id="typing-progress-bar"></div>
+            </div>
+            <div id="typing-content">
+                <div id="verse-queue"></div>
+                
+                <!-- NEW Context Top -->
+                <div id="verse-context-top" class="verse-context"></div>
+                
+                <div id="verse-display"></div>
+                
+                <!-- NEW Context Bottom -->
+                <div id="verse-context-bottom" class="verse-context"></div>
+                
+                <div id="current-word-container">
+                    <div id="current-word-label">TYPE:</div>
+                    <div id="current-word-display"></div>
+                </div>
+                
+                <div id="typing-input-area">
+                    <input type="text" id="typing-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type word, press SPACE">
+                </div>
+            </div>
+            <div id="typing-stats">
+                <span id="typing-wpm">0 WPM</span>
+                <span id="typing-accuracy">100%</span>
+            </div>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobile-controls" style="display: none;">
+            <div id="joystick-zone">
+                <div id="joystick-base"><div id="joystick-stick"></div></div>
+            </div>
+            <div id="look-zone"></div>
+            <div id="jump-button">▲</div>
+        </div>
+    </div>
+
+    <script src="lib/three.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/ui.js"></script>
+    
+    <!-- 1. ENGINE & PLAYER -->
+    <script src="js/platformer/engine.js"></script>
+    <script src="js/platformer/player.js"></script>
+    
+    <!-- 2. ROOM MANAGER (Must be before individual rooms) -->
+    <script src="js/platformer/room-manager.js"></script> 
+    
+    <!-- 3. ROOMS (Must be after RoomManager) -->
+    <script src="js/platformer/rooms/azure.js"></script>
+    <script src="js/platformer/rooms/crimson.js"></script>
+    <script src="js/platformer/rooms/emerald.js"></script>
+    <script src="js/platformer/rooms/amber.js"></script>
+    <script src="js/platformer/rooms/violet.js"></script>
+    <script src="js/platformer/rooms/silver.js"></script>
+    <script src="js/platformer/rooms/coral.js"></script>
+    <script src="js/platformer/rooms/cyan.js"></script>
+
+    <!-- 4. LOGIC -->
+    <script src="js/platformer/procedural.js"></script>
+    <script src="js/platformer/game.js"></script>
+    
+    <!-- TYPING DATA -->
+    <!-- Load the huge data file first -->
+    <script src="data/bible-full.js"></script> 
+    <!-- Then load the logic that uses it -->
+    <script src="js/typing/bible-loader.js"></script>
+    <script src="js/typing/typing-engine.js"></script>
+    <script src="js/typing/game.js"></script>
+    
+    <!-- 5. TYPING -->
+    <script src="js/typing/bible-loader.js"></script>
+    <script src="js/typing/typing-engine.js"></script>
+    <script src="js/typing/game.js"></script>
+    
+    <!-- 6. MAIN -->
+    <script src="js/main.js"></script>
+</body>
+</html>
